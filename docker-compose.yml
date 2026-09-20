@@ -1,0 +1,162 @@
+# Proyecto: DevLog LP — Blog sobre Lenguajes de Programación
+# Stack: WordPress + MySQL + phpMyAdmin + Adminer (4.º servicio)
+
+services:
+
+  # Base de datos MySQL
+  db:
+    image: mysql:8.0
+    container_name: wordpress-db
+    restart: unless-stopped
+    environment:
+      # CAMBIO 2.1: credenciales propias del proyecto
+      MYSQL_DATABASE: devlog_lp_db
+      MYSQL_USER: devlog_editor
+      MYSQL_PASSWORD: Dl-Editor_2026!ujap
+      MYSQL_ROOT_PASSWORD: Dl-Root_2026!ujap
+      TZ: America/Caracas
+    volumes:
+      - db_data:/var/lib/mysql
+    labels:
+      proyecto: "DevLog LP"
+      materia: "LPR07304"
+      rol: "base-de-datos"
+    # CAMBIO extra: healthcheck para saber cuándo MySQL está listo de verdad
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pDl-Root_2026!ujap"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - wp-network
+
+  # WordPress
+  wordpress:
+    image: wordpress:latest
+    container_name: wordpress-app
+    restart: unless-stopped
+    ports:
+      - "8080:80"           # Acceder en http://localhost:8080
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: devlog_lp_db
+      WORDPRESS_DB_USER: devlog_editor
+      WORDPRESS_DB_PASSWORD: Dl-Editor_2026!ujap
+      # CAMBIO 2.1: prefijo de tablas propio (en vez de wp_)
+      WORDPRESS_TABLE_PREFIX: devlog_
+      # CAMBIO 2.2: variables de entorno extra
+      WORDPRESS_DEBUG: 1    # activa WP_DEBUG
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_POST_REVISIONS', 5);
+        define('WP_MEMORY_LIMIT', '256M');
+        define('DISALLOW_FILE_EDIT', true);
+        define('AUTOSAVE_INTERVAL', 120);
+        define('EMPTY_TRASH_DAYS', 7);
+        define('WP_DEBUG_LOG', true);
+        define('WP_DEBUG_DISPLAY', false);
+        define('WP_ENVIRONMENT_TYPE', 'development');
+      TZ: America/Caracas
+    volumes:
+      - wp_data:/var/www/html
+      # CAMBIO: configuración PHP propia (subidas de hasta 64 MB)
+      - ./uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:ro
+    labels:
+      proyecto: "DevLog LP"
+      materia: "LPR07304"
+      rol: "sitio-wordpress"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    depends_on:
+      db:
+        condition: service_healthy   # espera a que MySQL responda
+    networks:
+      - wp-network
+
+  # phpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: wordpress-pma
+    restart: unless-stopped
+    ports:
+      - "8081:80"           # Acceder en http://localhost:8081
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: Dl-Root_2026!ujap
+    depends_on:
+      - db
+    networks:
+      - wp-network
+
+  # CAMBIO 2.3: cuarto servicio — Adminer (Opción B)
+  adminer:
+    image: adminer:latest
+    container_name: wordpress-adminer
+    restart: unless-stopped
+    ports:
+      - "8082:8080"         # Acceder en http://localhost:8082
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+      ADMINER_DESIGN: dracula
+    depends_on:
+      - db
+    networks:
+      - wp-network
+
+  # CAMBIO: WP-CLI — aplica la personalización visual (colores lila/verde, páginas, menú)
+  # No arranca con "up"; se ejecuta con:  docker compose run --rm wpcli
+  wpcli:
+    image: wordpress:cli
+    container_name: wordpress-cli
+    user: "33:33"           # mismo usuario que Apache (www-data)
+    profiles: ["herramientas"]
+    command: wp eval-file /personalizacion/personalizar.php
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: devlog_lp_db
+      WORDPRESS_DB_USER: devlog_editor
+      WORDPRESS_DB_PASSWORD: Dl-Editor_2026!ujap
+      WORDPRESS_TABLE_PREFIX: devlog_
+      HOME: /tmp
+      # ===== COLORES DEL SITIO =====
+      # Cambia un color aquí y ejecuta:  docker compose run --rm wpcli
+      DL_COLOR_LILA: "#9B59D0"          # lila principal: enlaces y bordes
+      DL_COLOR_LILA_OSCURO: "#6A2C91"   # encabezado, títulos y pie de página
+      DL_COLOR_LILA_CLARO: "#F3E8FC"    # fondos suaves: citas y etiquetas
+      DL_COLOR_VERDE: "#8DC63F"         # verde manzana: botones y detalles
+      DL_COLOR_VERDE_OSCURO: "#5E8C1F"  # hover de los enlaces
+      DL_COLOR_TEXTO: "#2D1B3D"         # color del texto
+      DL_COLOR_FONDO: "#FBF7FE"         # fondo de la página
+    volumes:
+      - wp_data:/var/www/html
+      - ./personalizacion:/personalizacion:ro
+    depends_on:
+      - db
+      - wordpress
+    networks:
+      - wp-network
+
+  # CAMBIO: quinto servicio — Dozzle (logs de los contenedores en el navegador)
+  dozzle:
+    image: amir20/dozzle:latest
+    container_name: wordpress-dozzle
+    restart: unless-stopped
+    ports:
+      - "8888:8080"         # Acceder en http://localhost:8888
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro   # solo lectura
+    environment:
+      DOZZLE_FILTER: "name=wordpress-"                 # solo muestra este proyecto
+
+# Volúmenes nombrados
+volumes:
+  db_data:       # datos de MySQL — persisten aunque pares el contenedor
+  wp_data:       # archivos de WordPress (temas, plugins, uploads)
+
+# Red compartida
+networks:
+  wp-network:
+    driver: bridge

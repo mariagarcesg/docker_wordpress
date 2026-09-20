@@ -1,0 +1,91 @@
+/* ===== DevLog LP — Lila + Verde manzana =====
+   Los colores NO se definen aquí: llegan como variables de entorno
+   desde el docker-compose.yml (servicio wpcli, variables DL_COLOR_*).
+   personalizar.php genera el bloque :root y lo antepone a este archivo. */
+body{background:var(--fondo);color:var(--texto)}
+::selection{background:var(--verde);color:#fff}
+a{color:var(--lila)}
+a:hover{color:var(--verde-oscuro)}
+h1,h2,h3,h4,.entry-title,.entry-title a{color:var(--lila-oscuro)}
+
+/* Encabezado */
+.main-header-bar,.ast-primary-header-bar,.ast-mobile-header-wrap .ast-primary-header-bar{
+  background:linear-gradient(90deg,var(--lila-oscuro),var(--lila))!important;
+  border-bottom:4px solid var(--verde)!important;
+}
+.site-title a,.site-title a:hover{color:#fff!important;font-weight:800;letter-spacing:.5px}
+.site-description{color:#E9FFD0!important}
+.main-header-menu .menu-link,.main-header-menu>.menu-item>.menu-link{color:#fff!important;font-weight:600}
+.main-header-menu .menu-item:hover>.menu-link,
+.main-header-menu .current-menu-item>.menu-link{color:var(--verde)!important}
+.main-header-menu .sub-menu{background:var(--lila-oscuro)!important}
+.ast-header-break-point .main-header-menu,.ast-mobile-header-content{background:var(--lila-oscuro)!important}
+.menu-toggle,.ast-mobile-menu-trigger-minimal{color:#fff!important}
+.menu-toggle .ast-mobile-svg{fill:#fff!important}
+
+/* Botones */
+.wp-block-button__link,button,input[type=submit],.ast-button,.ast-custom-button{
+  background:var(--verde)!important;color:#1B2A06!important;border:none!important;
+  border-radius:999px!important;font-weight:700!important;padding:.8em 1.8em!important;
+  transition:transform .15s,background .15s;
+}
+.wp-block-button__link:hover,button:hover,input[type=submit]:hover{background:var(--lila)!important;color:#fff!important;transform:translateY(-2px)}
+.dl-btn-borde .wp-block-button__link{background:transparent!important;color:#fff!important;border:2px solid #fff!important}
+.dl-btn-borde .wp-block-button__link:hover{background:#fff!important;color:var(--lila-oscuro)!important}
+
+/* Tarjetas de posts */
+.ast-separate-container .ast-article-post,.ast-separate-container .ast-article-single{
+  border-radius:16px;border-top:5px solid var(--lila);box-shadow:0 6px 20px rgba(106,44,145,.10);
+}
+.ast-separate-container .ast-article-post:hover{border-top-color:var(--verde)}
+.cat-links a,.tags-links a{background:var(--lila-claro);color:var(--lila-oscuro);padding:2px 10px;border-radius:999px;font-size:.85em}
+.cat-links a:hover,.tags-links a:hover{background:var(--verde);color:#fff}
+
+/* Barra lateral */
+#secondary .widget{background:#fff;border-radius:14px;padding:20px;border-left:5px solid var(--verde);box-shadow:0 4px 14px rgba(106,44,145,.08)}
+#secondary h3,#secondary .widget-title{color:var(--lila-oscuro);border-bottom:3px solid var(--verde);display:inline-block;padding-bottom:4px}
+.wp-block-tag-cloud a{background:var(--lila-claro);color:var(--lila-oscuro);padding:3px 12px;border-radius:999px;margin:3px;display:inline-block;font-size:.9em!important}
+.wp-block-tag-cloud a:hover{background:var(--verde);color:#fff}
+
+/* Código */
+.wp-block-code,pre{border-radius:12px!important;border-left:6px solid var(--verde)!important}
+
+/* Citas */
+.wp-block-quote{border-left:6px solid var(--verde)!important;background:var(--lila-claro);border-radius:0 14px 14px 0;padding:18px 24px}
+.wp-block-quote cite{color:var(--lila-oscuro);font-weight:700}
+
+/* ===== Portada ===== */
+.dl-hero{
+  background:linear-gradient(135deg,var(--lila-oscuro) 0%,var(--lila) 55%,var(--verde) 100%);
+  color:#fff;border-radius:24px;padding:70px 40px!important;text-align:center;margin-bottom:40px;
+}
+.dl-hero h1{color:#fff!important;font-size:clamp(2rem,5vw,3.4rem);margin-bottom:.3em}
+.dl-hero p{color:#F4FFE8;font-size:1.25rem}
+.dl-hero .wp-block-buttons{justify-content:center}
+.dl-seccion-titulo{text-align:center;margin-top:30px}
+.dl-seccion-titulo mark{background:linear-gradient(transparent 60%,var(--verde) 60%);color:inherit}
+.dl-tarjeta{background:#fff;border-radius:18px;padding:28px!important;border-bottom:6px solid var(--verde);
+  box-shadow:0 8px 24px rgba(106,44,145,.12);text-align:center;transition:transform .2s}
+.dl-tarjeta:hover{transform:translateY(-6px);border-bottom-color:var(--lila)}
+.dl-tarjeta .dl-icono{font-size:2.6rem;margin:0}
+.dl-cifras{background:var(--lila-oscuro);border-radius:20px;padding:30px!important;margin:40px 0}
+.dl-cifras p{color:#fff;text-align:center;margin:0}
+.dl-cifras .dl-num{font-size:2.6rem;font-weight:800;color:var(--verde)!important;line-height:1.1}
+.dl-cta{background:var(--verde);border-radius:20px;padding:40px!important;text-align:center;margin-top:40px}
+.dl-cta h2,.dl-cta p{color:#1B2A06!important}
+.dl-cta .wp-block-button__link{background:var(--lila-oscuro)!important;color:#fff!important}
+.dl-cta .wp-block-buttons{justify-content:center}
+.wp-block-latest-posts.is-grid li{background:#fff;border-radius:16px;padding:20px;border-top:5px solid var(--lila);box-shadow:0 6px 18px rgba(106,44,145,.10)}
+.wp-block-latest-posts.is-grid li:hover{border-top-color:var(--verde)}
+.wp-block-latest-posts__post-title{font-weight:700;color:var(--lila-oscuro)}
+
+/* Tablas */
+.wp-block-table thead{background:var(--lila);color:#fff}
+.wp-block-table td,.wp-block-table th{border-color:#E4D3F2!important}
+.wp-block-table tbody tr:nth-child(even){background:var(--lila-claro)}
+
+/* Pie de página */
+.site-footer,.site-below-footer-wrap,.ast-builder-grid-row-container.site-below-footer-wrap{
+  background:var(--lila-oscuro)!important;border-top:5px solid var(--verde)!important}
+.site-footer,.site-footer p,.ast-footer-copyright,.ast-footer-copyright p{color:#EBDDF7!important}
+.site-footer a{color:var(--verde)!important}
